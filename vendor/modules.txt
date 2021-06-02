@@ -1,0 +1,25 @@
+# github.com/go-playground/locales v0.13.0
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.17.0
+github.com/go-playground/universal-translator
+# github.com/go-playground/validator/v10 v10.6.1
+github.com/go-playground/validator/v10
+# github.com/leodido/go-urn v1.2.0
+github.com/leodido/go-urn
+# github.com/obada-foundation/sdk-go v0.0.0-20210602183640-ae5d4c90efa1
+## explicit
+github.com/obada-foundation/sdk-go
+github.com/obada-foundation/sdk-go/base58
+github.com/obada-foundation/sdk-go/hash
+github.com/obada-foundation/sdk-go/properties
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+golang.org/x/crypto/sha3
+# golang.org/x/sys v0.0.0-20190412213103-97732733099d
+golang.org/x/sys/cpu
+golang.org/x/sys/unix
+# golang.org/x/text v0.3.2
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
