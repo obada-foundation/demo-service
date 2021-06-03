@@ -64,21 +64,11 @@ func submitForm(w http.ResponseWriter, r *http.Request) {
 	dto.OwnerDid = r.FormValue("owner_did")
 	dto.ObdDid = r.FormValue("obd_did")
 
-	modifiedAt, err := time.Parse("2021-06-12T16:50", r.FormValue("modified_at"))
+	modifiedAt, err := time.Parse("2021-06-25T14:02", r.FormValue("modified_at"))
 
 	dto.ModifiedAt = modifiedAt
+	dto.Status = status
 
-	if status == "FUNCTIONAL" {
-		dto.Status = obadaSdk.StatusFunctional
-	} else if status == "NON_FUNCTIONAL" {
-		dto.Status = obadaSdk.StatusNonFunctional
-	} else if status == "DISPOSED" {
-		dto.Status = obadaSdk.StatusDisposed
-	} else if status == "STOLEN" {
-		dto.Status = obadaSdk.StatusStolen
-	} else if status == "DISABLED_BY_OWNER" {
-		dto.Status = obadaSdk.DisabledByOwner
-	}
 
 	obit, err := sdk.NewObit(dto)
 	_, err = obit.GetRootHash()
@@ -96,7 +86,7 @@ func submitForm(w http.ResponseWriter, r *http.Request) {
 func run(log *log.Logger) error {
 	http.HandleFunc("/", handleRequest) // setting router rule
 
-	err := http.ListenAndServe(":8011", nil) // setting listening port
+	err := http.ListenAndServe(":8080", nil) // setting listening port
 	if err != nil {
 		return err
 	}

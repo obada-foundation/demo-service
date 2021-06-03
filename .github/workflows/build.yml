@@ -1,0 +1,22 @@
+name: BuildContainer
+
+on: [push, pull_request]
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout-code
+        uses: actions/checkout@v2
+
+      - id: build-container
+        run: make build-docker
+
+      - id: login-to-docker-registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
+      - id: publish-docker-image
+        run: make publish-docker

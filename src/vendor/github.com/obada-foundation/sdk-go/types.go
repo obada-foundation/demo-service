@@ -2,8 +2,8 @@ package sdk_go
 
 import (
 	"github.com/obada-foundation/sdk-go/properties"
-	"time"
 	"log"
+	"time"
 )
 
 type Status string
@@ -28,7 +28,7 @@ type ObitDto struct {
 	StructureData map[string]string
 	Documents     map[string]string
 	ModifiedAt    time.Time
-	Status        Status
+	Status        string
 }
 
 type Obit struct {
@@ -41,8 +41,8 @@ type Obit struct {
 	metadata         properties.KvProperty
 	structureData    properties.KvProperty
 	documents        properties.KvProperty
-	modifiedAt       properties.StringProperty
-	status           properties.StringProperty
+	modifiedAt       properties.TimeProperty
+	status           properties.StatusProperty
 	debug bool
 	logger *log.Logger
 }

@@ -3,6 +3,7 @@ package properties
 import (
 	"fmt"
 	"github.com/obada-foundation/sdk-go/hash"
+	"log"
 	"strconv"
 )
 
@@ -17,11 +18,15 @@ type Record struct {
 	hash  hash.Hash
 }
 
-func NewRecord(key string, value string) (Record, error) {
+func NewRecord(key string, value string, log *log.Logger, debug bool) (Record, error) {
 	var r Record
 
-	k, err := NewStringProperty(key)
-	v, err := NewStringProperty(value)
+	if debug {
+		log.Printf("\nNewRecord(%q, %q)", key, value)
+	}
+
+	k, err := NewStringProperty(key, log, debug)
+	v, err := NewStringProperty(value, log, debug)
 
 	if err != nil {
 		return r, err
@@ -31,7 +36,11 @@ func NewRecord(key string, value string) (Record, error) {
 	vh := k.GetHash()
 	kvDec := kh.GetDec() + vh.GetDec()
 
-	h, err := hash.NewHash(strconv.FormatUint(kvDec, 10))
+	if debug {
+		log.Printf("(%d + %d) -> %d", kh.GetDec(), vh.GetDec(), kvDec)
+	}
+
+	h, err := hash.NewHash(strconv.FormatUint(kvDec, 10), log, debug)
 
 	if err != nil {
 		return r, err
@@ -56,13 +65,16 @@ func (r *Record) GetHash() hash.Hash {
 	return r.hash
 }
 
-func NewMapProperty(kv map[string]string) (KvProperty, error) {
+func NewMapProperty(kv map[string]string, log *log.Logger, debug bool) (KvProperty, error) {
 	var mp KvProperty
-
 	var kvDec uint64
 
+	if debug {
+		log.Printf("\nNewMapProperty(%v)", kv)
+	}
+
 	for key, value := range kv {
-		r, err := NewRecord(key, value)
+		r, err := NewRecord(key, value, log, debug)
 
 		if err != nil {
 			return mp, err
@@ -74,7 +86,7 @@ func NewMapProperty(kv map[string]string) (KvProperty, error) {
 		mp.records = append(mp.records, r)
 	}
 
-	h, err := hash.NewHash(strconv.FormatUint(kvDec, 10))
+	h, err := hash.NewHash(strconv.FormatUint(kvDec, 10), log, debug)
 
 	if err != nil {
 		return mp, fmt.Errorf("cannot hash %q: %w", kvDec, err)

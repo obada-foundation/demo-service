@@ -3,6 +3,7 @@ package properties
 import (
 	"fmt"
 	"github.com/obada-foundation/sdk-go/hash"
+	"log"
 )
 
 type StringProperty struct {
@@ -10,10 +11,14 @@ type StringProperty struct {
 	hash  hash.Hash
 }
 
-func NewStringProperty(value string) (StringProperty, error) {
+func NewStringProperty(value string, log *log.Logger, debug bool) (StringProperty, error) {
 	var sp StringProperty
 
-	h, err := hash.NewHash(value)
+	if debug {
+		log.Printf("\nNewStringProperty(%q)", value)
+	}
+
+	h, err := hash.NewHash(value, log, debug)
 
 	if err != nil {
 		return sp, fmt.Errorf("cannot hash %q: %w", value, err)
