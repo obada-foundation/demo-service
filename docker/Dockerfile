@@ -3,6 +3,8 @@
 # Start from the latest golang base image
 FROM golang:latest as builder
 
+ENV GOPRIVATE=github.com/obada-foundation
+
 # Add Maintainer Info
 LABEL maintainer="Andrii Tarykin <ksbomj@gmail.com>"
 
