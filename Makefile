@@ -8,7 +8,7 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
 run:
-	go run ./src/main.go
+	cd ./src && go run ./main.go
 
 vendor:
 	cd ./src && go mod tidy && go mod vendor

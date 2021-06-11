@@ -1,22 +1,26 @@
 package main
 
 import (
-	"bytes"
-	"html/template"
+	"context"
+	"expvar"
+	"fmt"
+	"github.com/obada-protocol/demo-service/http/handlers"
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"os/signal"
+	"syscall"
 	"time"
 
-	obadaSdk "github.com/obada-foundation/sdk-go"
+	"github.com/ardanlabs/conf"
+	"github.com/pkg/errors"
 )
 
-// build is the git version of this program. It is set using build flags in the makefile.
+// build is the git version of this program.
 var build = "develop"
 
 func main() {
-	log := log.New(os.Stdout, "OBADA-DEMO :", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+	log := log.New(os.Stdout, "OBADA-WEB :", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 
 	if err := run(log); err != nil {
 		log.Println(err)
@@ -24,71 +28,89 @@ func main() {
 	}
 }
 
-func handleRequest(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		showForm(w, r)
-	} else {
-		submitForm(w, r)
-	}
-}
-
-func showForm(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("templates/form.gtpl")
-	t.Execute(w, nil)
-}
-
-func submitForm(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	var captureSdkLogs bytes.Buffer
-
-	captureLog := log.New(&captureSdkLogs, "", 0)
-
-	sdk, err := obadaSdk.NewSdk(captureLog, true)
-
-	if err != nil {
-		log.Println(err.Error())
-		w.Write([]byte("Something went wrong!"))
-	}
-
-	status := r.FormValue("status")
-
-	if status == "FUNCTIONAL" {
-
-	}
-
-	var dto obadaSdk.ObitDto
-	dto.SerialNumberHash = r.FormValue("serial_number_hash")
-	dto.Manufacturer = r.FormValue("manufacturer")
-	dto.PartNumber = r.FormValue("part_number")
-	dto.OwnerDid = r.FormValue("owner_did")
-	dto.ObdDid = r.FormValue("obd_did")
-
-	modifiedAt, err := time.Parse("2021-06-25T14:02", r.FormValue("modified_at"))
-
-	dto.ModifiedAt = modifiedAt
-	dto.Status = status
-
-
-	obit, err := sdk.NewObit(dto)
-	_, err = obit.GetRootHash()
-
-	if err != nil {
-		log.Println(err.Error())
-		w.Write([]byte("Something went wrong!"))
-	}
-
-	logs := strings.ReplaceAll(captureSdkLogs.String(), "\n", "<br \\>")
-
-	w.Write([]byte(logs))
-}
-
 func run(log *log.Logger) error {
-	http.HandleFunc("/", handleRequest) // setting router rule
+	var cfg struct {
+		conf.Version
+		Web struct {
+			Host            string        `conf:"default:0.0.0.0:8080"`
+			ReadTimeout     time.Duration `conf:"default:3s"`
+			WriteTimeout    time.Duration `conf:"default:3s"`
+			ShutdownTimeout time.Duration `conf:"default:5s"`
+		}
+	}
 
-	err := http.ListenAndServe(":8080", nil) // setting listening port
+	cfg.Version.SVN = build
+	cfg.Version.Desc = "(c) OBADA Foundation 2021"
+
+	if err := conf.Parse(os.Args[1:], "OBADA-WEB", &cfg); err != nil {
+		switch err {
+		case conf.ErrHelpWanted:
+			usage, err := conf.Usage("OBADA-WEB", &cfg)
+			if err != nil {
+				return errors.Wrap(err, "generating config usage")
+			}
+			fmt.Println(usage)
+			return nil
+		case conf.ErrVersionWanted:
+			version, err := conf.VersionString("OBADA-WEB", &cfg)
+			if err != nil {
+				return errors.Wrap(err, "generating config version")
+			}
+			fmt.Println(version)
+			return nil
+		}
+		return errors.Wrap(err, "parsing config")
+	}
+
+	expvar.NewString("build").Set(build)
+
+	out, err := conf.String(&cfg)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "generating config for output")
+	}
+
+	log.Println(out)
+
+	// Make a channel to listen for an interrupt or terminate signal from the OS.
+	// Use a buffered channel because the signal package requires it.
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	httpHandlers := handlers.Server(build, shutdown, log)
+
+	server := http.Server{
+		Addr:         cfg.Web.Host,
+		Handler:      httpHandlers,
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
+	}
+
+
+	serverErrors := make(chan error, 1)
+
+	// Start the service listening for requests.
+	go func() {
+		log.Println("Http server started")
+		serverErrors <- server.ListenAndServe()
+	}()
+
+	select {
+	case err := <-serverErrors:
+		return errors.Wrap(err, "server error")
+
+	case sig := <-shutdown:
+		log.Println("shutdown started", sig)
+		defer log.Println("shutdown completed")
+
+		// Give outstanding requests a deadline for completion.
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
+		defer cancel()
+
+		// Asking listener to shutdown and shed load.
+		if err := server.Shutdown(ctx); err != nil {
+			server.Close()
+			return errors.Wrap(err, "could not stop server gracefully")
+		}
 	}
 
 	return nil

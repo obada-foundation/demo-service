@@ -1,0 +1,157 @@
+<obs>define "content"</obs>
+<div id="app">
+    <section class="block-explorer-wrapper bg-bottom-center">
+        <div class="block-explorer text">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-lg-12 align-self-center">
+                        <h1>Root Hash Generator</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="input-wrapper">
+                            <div>
+                                Rohi text here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block-explorer-section section bg-bottom">
+        <div class="container">
+            <form @submit="submitForm">
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="serial_number_hash">Serial Number Hash:</label>
+                        <input type="text" class="form-control" v-model="obit.serialNumberHash" id="serial_number_hash" name="serial_number_hash" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="manufacturer">Manufacturer:</label>
+                        <input type="text" class="form-control" v-model="obit.manufacturer" id="manufacturer" name="manufacturer" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="part_number">Part Number:</label>
+                        <input type="text" class="form-control" v-model="obit.partNumber" id="part_number" name="part_number" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="owner_did">Owner Did:</label>
+                        <input type="text" class="form-control" v-model="obit.ownerDid" id="owner_did" name="owner_did" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="obd_did">Obd Did:</label>
+                        <input type="text" class="form-control" id="obd_did" name="obd_did" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="metadata">Metadata:</label>
+                        <input type="text" class="form-control" id="metadata" name="metadata" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="structured_data">Structured data:</label>
+                        <input type="text" class="form-control" id="structured_data" name="structured_data" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="documents">Documents:</label>
+                        <input type="text" class="form-control" id="documents" name="documents" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="status">Status:</label>
+                        <select type="text" class="form-control" id="status" name="status" required>
+                            <option value="FUNCTIONAL">Functional</option>
+                            <option value="NON_FUNCTIONAL">Non Functional</option>
+                            <option value="DISPOSED">Disposed</option>
+                            <option value="STOLEN">Stolen</option>
+                            <option value="DISABLED_BY_OWNER">Disabled by owner</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-2">
+                        <label for="modified_at">Modified At:</label>
+                        <input type="datetime-local" class="form-control" id="modified_at" name="modified_at" min="2021-01-01" max="2030-12-31">
+                    </div>
+                </div>
+
+                <br />
+
+                <div id="obit-hash"></div>
+
+                <br />
+                <div class="row">
+                    <button type="submit" class="btn btn-primary col-3">Get Root Hash</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@next"></script>
+<script type="module">
+    import vue3Clipboard from 'https://cdn.skypack.dev/vue3-clipboard';
+    const App = {
+        methods: {
+            submitForm: function(event) {
+              event.preventDefault();
+
+              let vm = this
+              this.http.post('root-hash', this.obit).then(function (response) {
+                  console(response.data)
+              })
+          }
+        },
+        data: function () {
+            return {
+                obit: {
+                    serialNumberHash: "",
+                    manufacturer: "",
+                    partNumber: "",
+                    ownerDid: ""
+                },
+                http: axios.create({
+                    timeout: 2000
+                })
+            }
+        },
+    }
+
+    let app = Vue.createApp(App)
+    app.use(vue3Clipboard, {
+        autoSetContainer: true,
+        appendToBody: true,
+    })
+    app.mount('#app')
+</script>
+<obs>end</obs>
