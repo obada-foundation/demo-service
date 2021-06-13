@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"fmt"
 	sdk_go "github.com/obada-foundation/sdk-go"
 	app "github.com/obada-protocol/demo-service/http"
 	"log"
@@ -11,14 +10,14 @@ import (
 	"time"
 )
 
-type rootHashGroup struct {}
+type rootHashGroup struct{}
 
 type ObitRequest struct {
 	sdk_go.ObitDto
-	Metadata interface{}
+	Metadata       interface{}
 	StructuredData interface{}
-	Documents interface{}
-	ModifiedAt string
+	Documents      interface{}
+	ModifiedAt     string
 }
 
 func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
@@ -34,8 +33,6 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 	}
 
 	app.Decode(r, &requestData)
-
-	fmt.Println(requestData.Metadata)
 
 	toKV := func(dynamicKV interface{}) map[string]string {
 		kv := make(map[string]string)
@@ -72,10 +69,10 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 
 	resp := struct {
 		RootHash string
-		Log string
+		Log      string
 	}{
 		RootHash: rootHash.GetHash(),
-		Log: captureSdkLogs.String(),
+		Log:      captureSdkLogs.String(),
 	}
 
 	return app.RespondJson(ctx, w, resp, http.StatusOK)
@@ -84,7 +81,7 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 func (rh rootHashGroup) rootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var html bytes.Buffer
 
-	tpl, err := app.NewTpl().ParseFS(templateFs,"templates/roothash.html", "templates/base.html")
+	tpl, err := app.NewTpl().ParseFS(templateFs, "templates/roothash.html", "templates/base.html")
 
 	if err != nil {
 		return err

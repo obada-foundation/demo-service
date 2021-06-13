@@ -40,9 +40,7 @@ func Server(build string, shutdown chan os.Signal, log *log.Logger, options ...f
 	app.Handle(http.MethodGet, "/root-hash/:obitId", rhg.rootHash)
 	app.Handle(http.MethodPost, "/root-hash", rhg.calculateRootHash)
 
-	eg := explorerGroup{
-
-	}
+	eg := explorerGroup{}
 
 	app.Handle(http.MethodGet, "/explorer", eg.overview)
 	app.Handle(http.MethodGet, "/obit/:obitId", eg.obit)

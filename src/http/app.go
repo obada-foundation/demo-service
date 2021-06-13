@@ -61,7 +61,7 @@ func (a *App) HandleDebug(method string, path string, handler Handler, mw ...Mid
 func (a *App) HandleStatic() {
 	contextMux := a.mux.UsingContext()
 
-	contextMux.Handler(http.MethodGet,"/public/*", build.AssetHandler("/public/", "build"))
+	contextMux.Handler(http.MethodGet, "/public/*", build.AssetHandler("/public/", "build"))
 }
 
 func (a *App) Handle(method string, path string, handler Handler, mw ...Middleware) {

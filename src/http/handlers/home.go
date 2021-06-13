@@ -16,7 +16,7 @@ func home(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	if err = tpl.ExecuteTemplate(&html, "base",nil); err != nil {
+	if err = tpl.ExecuteTemplate(&html, "base", nil); err != nil {
 		return err
 	}
 

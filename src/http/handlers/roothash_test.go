@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	sdk_go "github.com/obada-foundation/sdk-go"
 	"testing"
 )
@@ -24,6 +23,4 @@ func TestDecodingJsonFromFrontendToDto(t *testing.T) {
 	if err := json.Unmarshal(data, &dto); err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Printf("%v", dto)
 }

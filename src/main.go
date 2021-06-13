@@ -85,7 +85,6 @@ func run(log *log.Logger) error {
 		WriteTimeout: cfg.Web.WriteTimeout,
 	}
 
-
 	serverErrors := make(chan error, 1)
 
 	// Start the service listening for requests.
