@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"fmt"
 	sdk_go "github.com/obada-foundation/sdk-go"
 	app "github.com/obada-protocol/demo-service/http"
 	"log"
@@ -12,8 +13,18 @@ import (
 
 type rootHashGroup struct {}
 
+type ObitRequest struct {
+	sdk_go.ObitDto
+	Metadata interface{}
+	StructuredData interface{}
+	Documents interface{}
+	ModifiedAt string
+}
+
 func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var captureSdkLogs bytes.Buffer
+	var requestData ObitRequest
+	var dto sdk_go.ObitDto
 
 	captureLog := log.New(&captureSdkLogs, "", 0)
 	sdk, err := sdk_go.NewSdk(captureLog, true)
@@ -22,26 +33,52 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 		return err
 	}
 
+	app.Decode(r, &requestData)
 
+	fmt.Println(requestData.Metadata)
 
-	var dto sdk_go.ObitDto
-	dto.SerialNumberHash = r.FormValue("serial_number_hash")
-	dto.Manufacturer = r.FormValue("manufacturer")
-	dto.PartNumber = r.FormValue("part_number")
-	dto.OwnerDid = r.FormValue("owner_did")
-	dto.ObdDid = r.FormValue("obd_did")
-	modifiedAt, err := time.Parse("2021-06-25T14:02", r.FormValue("modified_at"))
+	toKV := func(dynamicKV interface{}) map[string]string {
+		kv := make(map[string]string)
+
+		dynamicKVMap := dynamicKV.(map[string]interface{})
+
+		for key := range dynamicKVMap {
+			kv[key] = dynamicKVMap[key].(string)
+		}
+
+		return kv
+	}
+
+	dto.SerialNumberHash = requestData.SerialNumberHash
+	dto.Manufacturer = requestData.Manufacturer
+	dto.PartNumber = requestData.PartNumber
+	dto.ObdDid = requestData.ObdDid
+	dto.OwnerDid = requestData.OwnerDid
+	dto.Status = requestData.Status
+	dto.Matadata = toKV(requestData.Metadata)
+	dto.StructuredData = toKV(requestData.StructuredData)
+	dto.Documents = toKV(requestData.Documents)
+
+	modifiedAt, err := time.Parse(time.RFC3339, requestData.ModifiedAt)
+
+	if err != nil {
+		return err
+	}
+
 	dto.ModifiedAt = modifiedAt
-	dto.Status = r.FormValue("status")
-
-	log.Printf("%v", dto)
-
 
 	obit, err := sdk.NewObit(dto)
-	_, err = obit.GetRootHash()
+	rootHash, err := obit.GetRootHash()
 
+	resp := struct {
+		RootHash string
+		Log string
+	}{
+		RootHash: rootHash.GetHash(),
+		Log: captureSdkLogs.String(),
+	}
 
-	return app.RespondJson(ctx, w, nil, http.StatusOK)
+	return app.RespondJson(ctx, w, resp, http.StatusOK)
 }
 
 func (rh rootHashGroup) rootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
@@ -53,7 +90,13 @@ func (rh rootHashGroup) rootHash(ctx context.Context, w http.ResponseWriter, r *
 		return err
 	}
 
-	if err = tpl.ExecuteTemplate(&html, "base",nil); err != nil {
+	data := struct {
+		ObitId string
+	}{
+		ObitId: app.Param(r, "obitId"),
+	}
+
+	if err = tpl.ExecuteTemplate(&html, "base", data); err != nil {
 		return err
 	}
 

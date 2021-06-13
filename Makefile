@@ -10,6 +10,9 @@ SHELL := /bin/bash
 run:
 	cd ./src && go run ./main.go
 
+test:
+	cd ./src && go test ./...
+
 vendor:
 	cd ./src && go mod tidy && go mod vendor
 

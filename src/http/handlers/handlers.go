@@ -37,6 +37,7 @@ func Server(build string, shutdown chan os.Signal, log *log.Logger, options ...f
 	rhg := rootHashGroup{}
 
 	app.Handle(http.MethodGet, "/root-hash", rhg.rootHash)
+	app.Handle(http.MethodGet, "/root-hash/:obitId", rhg.rootHash)
 	app.Handle(http.MethodPost, "/root-hash", rhg.calculateRootHash)
 
 	eg := explorerGroup{
