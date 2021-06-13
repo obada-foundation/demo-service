@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  nginx:
+    image: umputun/nginx-le:latest
+    hostname: nginx
+    restart: always
+    container_name: nginx
+    logging:
+      driver: json-file
+      options:
+          max-size: "10m"
+          max-file: "5"
+    volumes:
+        - ./etc/ssl:/etc/nginx/ssl
+        - ./etc/nginx/service.conf:/etc/nginx/service.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - frontend
+    environment:
+      - TZ=America/Chicago
+      - LETSENCRYPT=true
+      - LE_EMAIL=techops@obada.io
+      - LE_FQDN={{ admin_tools_fqdn }}
+
+  app:
+    image: obada/server-gateway:develop
+    container_name: gateway
+    restart: always
+    networks:
+      - frontend
+
+networks:
+  frontend:
