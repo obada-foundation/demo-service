@@ -1,0 +1,223 @@
+<obs>define "content"</obs>
+<div id="app" did="<obs> .ObitId</obs>">
+    <section class="block-explorer-section section bg-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="center-heading">
+                        <h2 class="section-title">Obit details</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-bottom-70">
+                <div class=" col-sm-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-latests table-detail">
+                            <tbody>
+                            <tr>
+                                <td><strong>Obit Id</strong></td>
+                                <td>{{ obit.obit_did }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>USN</strong></td>
+                                <td>{{ obit.usn }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Serial Number Hash</strong></td>
+                                <td>{{ obit.serial_number_hash }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Owner DID</strong></td>
+                                <td>{{ obit.owner_did }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OBD DID</strong></td>
+                                <td>{{ obit.obd_did }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Obit Status</strong></td>
+                                <td>{{ obit.obit_status }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Manufacturer</strong></td>
+                                <td>{{ obit.manufacturer }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Part Number</strong></td>
+                                <td>{{ obit.part_number }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Root Hash</strong></td>
+                                <td>{{ obit.root_hash }} <a target="_blank" :href="'/root-hash/' + obit.obit_did" class="btn btn-success">Test hash</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>QLDB Hash</strong></td>
+                                <td>{{ obit.qldb_root_hash }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modified At</strong></td>
+                                <td>{{ obit.modified_at }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="center-heading">
+                        <h2 class="section-title">Metadata</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row m-bottom-70" v-show="!obit.metadata || obit.metadata.length == 0">
+                <h3>No metadata data are exists</h3>
+            </div>
+
+            <div class="row m-bottom-70" v-show="obit.metadata && obit.metadata.length > 0">
+                <div class=" col-sm-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-latests table-detail">
+                            <tbody>
+                            <tr v-for="(value, key) in obit.metadata" :key="key">
+                                <td><strong>{{ key }}</strong></td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="center-heading">
+                        <h2 class="section-title">Structured Data</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row m-bottom-70" v-show="!obit.structured_data || obit.structured_data.length == 0">
+                <h3>No structured data are exists</h3>
+            </div>
+
+            <div class="row m-bottom-70" v-show="obit.structured_data && obit.structured_data.length > 0">
+                <div class=" col-sm-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-latests table-detail">
+                            <tbody>
+                            <tr v-for="(value, key) in obit.structured_data" :key="key">
+                                <td><strong>{{ key }}</strong></td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="center-heading">
+                        <h2 class="section-title">Document Links</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-bottom-70" v-show="!obit.doc_links || obit.doc_links.length == 0">
+                <h3>No document links are present</h3>
+            </div>
+            <div class="row m-bottom-70" v-show="obit.doc_links && obit.doc_links.length > 0">
+                <div class=" col-sm-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-latests table-detail">
+                            <tbody>
+                            <tr v-for="(value, key) in obit.doc_links" :key="key">
+                                <td><strong>{{ key }}</strong></td>
+                                <td>{{ value }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="center-heading">
+                        <h2 class="section-title">Changelog</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-latests">
+                            <thead>
+                            <tr>
+                                <td>#</td>
+                                <td>ObitID</td>
+                                <td>Old Data</td>
+                                <td>New Data</td>
+                                <td>Event</td>
+                                <td>Created At</td>
+                                <td>Updated At</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(record, index) in history" :key="record.new_value">
+                                <td>{{ index+1 }}</td>
+                                <td>{{ record.obit_did }}</td>
+                                <td>{{ JSON.stringify(record.old_values) }}</td>
+                                <td>{{ JSON.stringify(record.new_values) }}</td>
+                                <td>{{ record.event }}</td>
+                                <td>{{ record.created_at }}</td>
+                                <td>{{ record.updated_at }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@next"></script>
+<script type="module">
+    import vue3Clipboard from 'https://cdn.skypack.dev/vue3-clipboard';
+    const App = {
+        created() {
+            const did = "<obs> .ObitId</obs>"
+            let vm = this
+            this.http.get('obits/' + did).then(function (response) {
+                vm.obit = response.data
+            })
+
+            this.http.get('obits/' + did + '/history').then(function (response) {
+                vm.history = response.data.data
+            })
+        },
+        data() {
+            return {
+                obit: {},
+                history: [],
+                http: axios.create({
+                    baseURL: 'https://dev.api.obada.io/',
+                    timeout: 2000
+                })
+            }
+        },
+    }
+
+    let app = Vue.createApp(App)
+    app.use(vue3Clipboard, {
+        autoSetContainer: true,
+        appendToBody: true,
+    })
+    app.mount('#app')
+</script>
+<obs>end</obs>

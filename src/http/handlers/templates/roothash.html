@@ -1,0 +1,280 @@
+<obs>define "content"</obs>
+<div id="app">
+    <section class="block-explorer-wrapper bg-bottom-center">
+        <div class="block-explorer text">
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-lg-12 align-self-center">
+                        <h1>Root Hash Generator</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="input-wrapper">
+                            <div>
+                                Rohi text here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block-explorer-section section bg-bottom">
+        <div class="container">
+            <form @submit="submitForm">
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="serial_number_hash">Serial Number Hash:</label>
+                        <input type="text" class="form-control" v-model="obit.SerialNumberHash" id="serial_number_hash" name="serial_number_hash" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="manufacturer">Manufacturer:</label>
+                        <input type="text" class="form-control" v-model="obit.Manufacturer" id="manufacturer" name="manufacturer" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="part_number">Part Number:</label>
+                        <input type="text" class="form-control" v-model="obit.PartNumber" id="part_number" name="part_number" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="owner_did">Owner Did:</label>
+                        <input type="text" class="form-control" v-model="obit.OwnerDid" id="owner_did" name="owner_did" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="obd_did">Obd Did:</label>
+                        <input type="text" class="form-control" v-model="obit.ObdDid" id="obd_did" name="obd_did" required>
+                    </div>
+                </div>
+
+                <label>Metadata:</label>
+
+                <div class="form-inline" v-for="(v, index) in obit.Metadata">
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Key" class="form-control" v-model="obit.Metadata[index].key">
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Value" class="form-control" v-model="obit.Metadata[index].value">
+                    </div>
+
+                    <button type="button" v-show="index == 0" @click="AddKV('Metadata')" class="btn btn-primary mb-2">Add</button>
+                    <button type="button" v-show="!!index" @click="RemoveKV('Metadata', index)" class="btn btn-danger mb-2">Remove</button>
+                </div>
+
+                <label>Structured data:</label>
+
+                <div class="form-inline" v-for="(v, index) in obit.StructuredData">
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Key" class="form-control" v-model="obit.StructuredData[index].key">
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Value" class="form-control" v-model="obit.StructuredData[index].value">
+                    </div>
+
+                    <button type="button" v-show="index == 0" @click="AddKV('StructuredData')" class="btn btn-primary mb-2">Add</button>
+                    <button type="button" v-show="!!index" @click="RemoveKV('StructuredData', index)" class="btn btn-danger mb-2">Remove</button>
+                </div>
+
+                <label>Documents:</label>
+
+                <div class="form-inline" v-for="(v, index) in obit.Documents">
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Key" class="form-control" v-model="obit.Documents[index].key">
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <input type="text" placeholder="Value" class="form-control" v-model="obit.Documents[index].value">
+                    </div>
+
+                    <button type="button" v-show="index == 0" @click="AddKV('Documents')" class="btn btn-primary mb-2">Add</button>
+                    <button type="button" v-show="!!index" @click="RemoveKV('Documents', index)" class="btn btn-danger mb-2">Remove</button>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-6">
+                        <label for="status">Status:</label>
+                        <select type="text" v-model="obit.Status" class="form-control" id="status" name="status" required>
+                            <option value="FUNCTIONAL">Functional</option>
+                            <option value="NON_FUNCTIONAL">Non Functional</option>
+                            <option value="DISPOSED">Disposed</option>
+                            <option value="STOLEN">Stolen</option>
+                            <option value="DISABLED_BY_OWNER">Disabled by owner</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-2">
+                        <label>Modified At:</label>
+                        <input type="datetime-local" class="form-control" v-model="obit.ModifiedAt" min="2021-01-01" max="2030-12-31">
+                    </div>
+                </div>
+
+                <div class="row" v-show="rootHash.length > 0">
+                    <div class="form-group col-2">
+                        <p>Root Hash: {{ rootHash }}</p>
+
+                        <p>See how it was calculated in a table below</p>
+                        <table class="table">
+                            <thead>
+                                <tr>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(record, index) in log">
+                                    <td>{{ index+1 }}</td>
+                                    <td>{{ record }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <br />
+                <div class="row">
+                    <button type="submit" class="btn btn-primary col-3">Get Root Hash</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@next"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script type="module">
+    import vue3Clipboard from 'https://cdn.skypack.dev/vue3-clipboard';
+    const App = {
+        methods: {
+            AddKV: function (prop) {
+                this.obit[prop].push({"key": "", "value": ""})
+            },
+            RemoveKV: function (prop, index) {
+                this.obit[prop].splice(index, 1)
+            },
+            submitForm: function(event) {
+                event.preventDefault();
+
+                let vm = this
+                const formattedObit = Object.assign({}, this.obit);
+
+                let metadata = {}
+
+                for (let index in this.obit.Metadata) {
+                    metadata[this.obit.Metadata[index].key] = this.obit.Metadata[index].value
+                }
+
+                let structured_data = {}
+
+                for (let index in this.obit.StructuredData) {
+                    structured_data[this.obit.StructuredData[index].key] = this.obit.StructuredData[index].value
+                }
+
+                let documents = {}
+
+                for (let index in this.obit.Documents) {
+                    documents[this.obit.Documents[index].key] = this.obit.Documents[index].value
+                }
+
+                formattedObit.ModifiedAt = new Date(this.obit.ModifiedAt)
+                formattedObit.Metadata = metadata
+                formattedObit.StructuredData = structured_data
+                formattedObit.Documents = documents
+                console.log(formattedObit)
+                this.http.post('/root-hash', formattedObit).then(function (response) {
+                  vm.rootHash = response.data.RootHash
+                  vm.log = response.data.Log.split("\n\n")
+                })
+          }
+        },
+        created() {
+            let vm = this
+
+            let http = axios.create({
+                baseURL: 'https://dev.api.obada.io/',
+                timeout: 2000
+            })
+
+            http.get('obits/' + this.obitId).then(function (response) {
+                const obit = response.data
+
+                vm.obit.SerialNumberHash = obit.serial_number_hash
+                vm.obit.Manufacturer = obit.manufacturer
+                vm.obit.PartNumber = obit.part_number
+                vm.obit.OwnerDid = obit.owner_did
+                vm.obit.ObdDid = obit.obd_did
+                vm.obit.ModifiedAt = moment(new Date(obit.modified_at)).format('YYYY-MM-DDTHH:mm')
+                vm.obit.Status = obit.obit_status
+
+                if (obit.metadata && obit.metadata.length) {
+                    vm.obit.Metadata.splice(0, 1)
+                    for (let i in obit.metadata) {
+                        vm.obit.Metadata.push({"key": obit.metadata[i]['key'], "value": obit.metadata[i]['value']})
+                    }
+                }
+
+                if (obit.structured_data && obit.structured_data.length) {
+                    vm.obit.StructuredData.splice(0, 1)
+                    for (let i in obit.structured_data) {
+                        vm.obit.StructuredData.push({"key": obit.structured_data[i]['key'], "value": obit.structured_data[i]['value']})
+                    }
+                }
+            })
+        },
+        data() {
+            return {
+                rootHash: "",
+                log: [],
+                obitId: "<obs> .ObitId</obs>",
+                obit: {
+                    SerialNumberHash: "",
+                    Manufacturer: "",
+                    PartNumber: "",
+                    OwnerDid: "",
+                    ObdDid: "",
+                    Status: "",
+                    ModifiedAt: "",
+                    Metadata: [
+                        {"key": "", "value": ""}
+                    ],
+                    StructuredData: [
+                        {"key": "", "value": ""}
+                    ],
+                    Documents: [
+                        {"key": "", "value": ""}
+                    ]
+                },
+                http: axios.create({
+                    timeout: 2000
+                })
+            }
+        },
+    }
+
+    let app = Vue.createApp(App)
+    app.use(vue3Clipboard, {
+        autoSetContainer: true,
+        appendToBody: true,
+    })
+    app.mount('#app')
+</script>
+<obs>end</obs>
