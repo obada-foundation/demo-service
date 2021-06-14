@@ -52,6 +52,12 @@
         dest: "{{ deployment_path }}/docker-compose.yml"
         mode: 0644
 
+    - name: Auth with custom docker registry
+      docker_login:
+        username: "{{ registry_username }}"
+        password: "{{ registry_password }}"
+        reauthorize: yes
+
     - name: "Run `docker-compose up`"
       docker_compose:
         project_src: "{{ deployment_path }}"

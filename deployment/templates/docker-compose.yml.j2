@@ -26,8 +26,8 @@ services:
       - LE_FQDN={{ admin_tools_fqdn }}
 
   app:
-    image: obada/server-gateway:develop
-    container_name: gateway
+    image: obada/admin-application
+    container_name: admin-application
     restart: always
     networks:
       - frontend
