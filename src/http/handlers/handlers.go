@@ -44,6 +44,11 @@ func Server(build string, shutdown chan os.Signal, log *log.Logger, options ...f
 
 	app.Handle(http.MethodGet, "/explorer", eg.overview)
 	app.Handle(http.MethodGet, "/obit/:obitId", eg.obit)
+
+	ng := nodesGroup{}
+
+	app.Handle(http.MethodGet, "/nodes", ng.all)
+
 	app.HandleStatic()
 
 	// Accept CORS 'OPTIONS' preflight requests if config has been provided.
