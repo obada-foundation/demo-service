@@ -18,13 +18,29 @@
                             <div>
                                 <input
                                         class="form-control"
-                                        style="width:95%;float:left"
+                                        style="width:90%;float:left"
                                         type="text" v-model="searchTerm"
                                         v-on:keyup="searchOnEnter"
                                         placeholder="ObitID, USN, Manufacturer, PartNumber, SerialNumber...">
-                                <button class="btn btn-primary" v-on:click="this.doSearch">
-                                    <i class="bi bi-search"></i>
-                                </button>
+                                <div>
+                                    <button style="margin-left: 5px" class="btn btn-primary" v-on:click="this.doSearch">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+
+                                    <button style="margin-left: 5px" class="btn btn-primary" v-on:click="settings.open = !settings.open">
+                                        <i class="bi bi-tools"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div style="margin-top: 5px" v-show="settings.open">
+                                <select style="width:30%" class="form-control col-xs-2" v-model="node">
+                                    <option disabled>Select a custom node</option>
+                                    <option v-for="node in nodes" v-bind:value="node">
+                                        {{ node }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -118,13 +134,34 @@
                     vm.obits.push(obit)
                 })
             })
+
+            let http = axios.create({ timeout: 2000 })
+
+            http.get('/nodes').then(function (response) {
+                response.data.forEach(function (node) {
+                    vm.nodes.push(node)
+                })
+            })
+        },
+        watch: {
+            node: function (node) {
+                this.http = axios.create({
+                    baseURL: "https://" + node,
+                    timeout: 2000
+                })
+            },
         },
         data() {
             return {
+                node: "https://dev.api.obada.io/",
+                nodes: [],
+                settings: {
+                  open: false
+                },
                 searchTerm: "",
                 obits: [],
                 http: axios.create({
-                    baseURL: 'https://dev.api.obada.io/',
+                    baseURL: "https://dev.api.obada.io/",
                     timeout: 2000
                 })
             }
