@@ -74,7 +74,7 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 		return err
 	}
 
-	logOutput := strings.ReplaceAll(captureSdkLogs.String(), "<|", "<p style='font-weight:bold;color:green'>")
+	logOutput := strings.ReplaceAll(captureSdkLogs.String(), "<|", "<p style='font-weight:bold;color:#16a085'>")
 	logOutput = strings.ReplaceAll(logOutput, "|>", "</p>")
 
 	resp := struct {

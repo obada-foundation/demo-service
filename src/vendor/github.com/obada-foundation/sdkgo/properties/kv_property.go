@@ -25,16 +25,16 @@ func NewRecord(description, key, value string, logger *log.Logger, debug bool) (
 	var r Record
 
 	if debug {
-		logger.Printf("\n |%s| => NewRecord(%q, %q)", description, key, value)
+		logger.Printf("\n <|%s|> => NewRecord(%q, %q)", description, key, value)
 	}
 
-	k, err := NewStringProperty("New record key", key, logger, debug)
+	k, err := NewStringProperty(description + " :: New record key", key, logger, debug)
 
 	if err != nil {
 		return r, err
 	}
 
-	v, err := NewStringProperty("New record value", value, logger, debug)
+	v, err := NewStringProperty(description + " :: New record value", value, logger, debug)
 
 	if err != nil {
 		return r, err
@@ -86,9 +86,7 @@ func NewMapProperty(description string, kv map[string]string, logger *log.Logger
 	}
 
 	for key, value := range kv {
-		description = "\t" + description + " :: creating key/value record"
-
-		r, err := NewRecord(description, key, value, logger, debug)
+		r, err := NewRecord(description + " :: creating key/value record", key, value, logger, debug)
 
 		if err != nil {
 			return mp, err
