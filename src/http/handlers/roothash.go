@@ -3,30 +3,30 @@ package handlers
 import (
 	"bytes"
 	"context"
-	sdk_go "github.com/obada-foundation/sdk-go"
+	sdkgo "github.com/obada-foundation/sdkgo"
 	app "github.com/obada-protocol/demo-service/http"
 	"log"
 	"net/http"
-	"time"
+	"strings"
 )
 
 type rootHashGroup struct{}
 
 type ObitRequest struct {
-	sdk_go.ObitDto
+	sdkgo.ObitDto
 	Metadata       interface{}
 	StructuredData interface{}
 	Documents      interface{}
-	ModifiedAt     string
+	ModifiedOn     int64
 }
 
 func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var captureSdkLogs bytes.Buffer
 	var requestData ObitRequest
-	var dto sdk_go.ObitDto
+	var dto sdkgo.ObitDto
 
 	captureLog := log.New(&captureSdkLogs, "", 0)
-	sdk, err := sdk_go.NewSdk(captureLog, true)
+	sdk, err := sdkgo.NewSdk(captureLog, true)
 
 	if err != nil {
 		return err
@@ -56,23 +56,33 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 	dto.StructuredData = toKV(requestData.StructuredData)
 	dto.Documents = toKV(requestData.Documents)
 
-	modifiedAt, err := time.Parse(time.RFC3339, requestData.ModifiedAt)
+	if err != nil {
+		return err
+	}
+
+	dto.ModifiedOn = requestData.ModifiedOn
+
+	obit, err := sdk.NewObit(dto)
 
 	if err != nil {
 		return err
 	}
 
-	dto.ModifiedAt = modifiedAt
-
-	obit, err := sdk.NewObit(dto)
 	rootHash, err := obit.GetRootHash()
+
+	if err != nil {
+		return err
+	}
+
+	logOutput := strings.ReplaceAll(captureSdkLogs.String(), "<|", "<p style='font-weight:bold;color:green'>")
+	logOutput = strings.ReplaceAll(logOutput, "|>", "</p>")
 
 	resp := struct {
 		RootHash string
 		Log      string
 	}{
 		RootHash: rootHash.GetHash(),
-		Log:      captureSdkLogs.String(),
+		Log:      logOutput,
 	}
 
 	return app.RespondJson(ctx, w, resp, http.StatusOK)

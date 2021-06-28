@@ -59,7 +59,7 @@
                 <div class="row">
                     <div class="form-group col-6">
                         <label for="obd_did">Obd Did:</label>
-                        <input type="text" class="form-control" v-model="obit.ObdDid" id="obd_did" name="obd_did" required>
+                        <input type="text" class="form-control" v-model="obit.ObdDid" id="obd_did" name="obd_did">
                     </div>
                 </div>
 
@@ -123,8 +123,8 @@
 
                 <div class="row">
                     <div class="form-group col-2">
-                        <label>Modified At:</label>
-                        <input type="datetime-local" class="form-control" v-model="obit.ModifiedAt" min="2021-01-01" max="2030-12-31">
+                        <label>Modified On:</label>
+                        <input type="datetime-local" class="form-control" v-model="obit.ModifiedOn" min="2021-01-01" max="2030-12-31">
                     </div>
                 </div>
 
@@ -142,7 +142,7 @@
                             <tbody>
                                 <tr v-for="(record, index) in log">
                                     <td>{{ index+1 }}</td>
-                                    <td>{{ record }}</td>
+                                    <td v-html="record"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -195,7 +195,14 @@
                     documents[this.obit.Documents[index].key] = this.obit.Documents[index].value
                 }
 
-                formattedObit.ModifiedAt = new Date(this.obit.ModifiedAt)
+                let unix = moment(this.obit.ModifiedOn).unix()
+
+                if (isNaN(unix)) {
+                    unix = moment().unix()
+                }
+
+
+                formattedObit.ModifiedOn = unix
                 formattedObit.Metadata = metadata
                 formattedObit.StructuredData = structured_data
                 formattedObit.Documents = documents
@@ -222,7 +229,7 @@
                 vm.obit.PartNumber = obit.part_number
                 vm.obit.OwnerDid = obit.owner_did
                 vm.obit.ObdDid = obit.obd_did
-                vm.obit.ModifiedAt = moment(new Date(obit.modified_at)).format('YYYY-MM-DDTHH:mm')
+                vm.obit.ModifiedOn = moment.unix(obit.modified_on).format('YYYY-MM-DDTHH:mm')
                 vm.obit.Status = obit.obit_status
 
                 if (obit.metadata && obit.metadata.length) {
@@ -252,7 +259,7 @@
                     OwnerDid: "",
                     ObdDid: "",
                     Status: "",
-                    ModifiedAt: "",
+                    ModifiedOn: 0,
                     Metadata: [
                         {"key": "", "value": ""}
                     ],

@@ -19,6 +19,12 @@ github.com/obada-foundation/sdk-go
 github.com/obada-foundation/sdk-go/base58
 github.com/obada-foundation/sdk-go/hash
 github.com/obada-foundation/sdk-go/properties
+# github.com/obada-foundation/sdkgo v0.0.0-20210628222804-e7f462016d69
+## explicit
+github.com/obada-foundation/sdkgo
+github.com/obada-foundation/sdkgo/base58
+github.com/obada-foundation/sdkgo/hash
+github.com/obada-foundation/sdkgo/properties
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors

@@ -25,15 +25,10 @@ type ObitDto struct {
 	OwnerDid      string `validate:"required"`
 	ObdDid        string
 	Matadata      map[string]string
-	StructuredData map[string]string
+	StructureData map[string]string
 	Documents     map[string]string
 	ModifiedAt    time.Time
 	Status        string
-}
-
-type DtoMapRecord struct {
-	Key string
-	Value string
 }
 
 type Obit struct {
@@ -44,7 +39,7 @@ type Obit struct {
 	ownerDid         properties.StringProperty
 	obdDid           properties.StringProperty
 	metadata         properties.KvProperty
-	structuredData    properties.KvProperty
+	structureData    properties.KvProperty
 	documents        properties.KvProperty
 	modifiedAt       properties.TimeProperty
 	status           properties.StatusProperty
