@@ -45,7 +45,7 @@ func NewRecord(description, key, value string, logger *log.Logger, debug bool) (
 	kvDec := kh.GetDec() + vh.GetDec()
 
 	if debug {
-		log.Printf("(%d + %d) -> %d", kh.GetDec(), vh.GetDec(), kvDec)
+		logger.Printf("\n <|Sum key and value decimals and hash them|> (%d + %d) -> %d", kh.GetDec(), vh.GetDec(), kvDec)
 	}
 
 	h, err := hash.NewHash(strconv.FormatUint(kvDec, 10), logger, debug)
