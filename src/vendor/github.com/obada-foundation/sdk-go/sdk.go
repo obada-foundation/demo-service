@@ -98,7 +98,7 @@ func (sdk *Sdk) NewObit(dto ObitDto) (Obit, error) {
 		return o, err
 	}
 
-	strctDataProp, err := properties.NewMapProperty(dto.StructuredData, sdk.logger, sdk.debug)
+	strctDataProp, err := properties.NewMapProperty(dto.StructureData, sdk.logger, sdk.debug)
 
 	if err != nil {
 		return o, err
@@ -118,7 +118,7 @@ func (sdk *Sdk) NewObit(dto ObitDto) (Obit, error) {
 	o.ownerDid = ownerDidProp
 	o.status = statusProp
 	o.metadata = metadataProp
-	o.structuredData = strctDataProp
+	o.structureData = strctDataProp
 	o.documents = documentsProp
 	o.modifiedAt = modifiedAt
 
@@ -139,7 +139,7 @@ func (o Obit) GetRootHash() (hash.Hash, error) {
 		o.ownerDid.GetHash().GetDec() +
 		o.obdDid.GetHash().GetDec() +
 		o.metadata.GetHash().GetDec() +
-		o.structuredData.GetHash().GetDec() +
+		o.structureData.GetHash().GetDec() +
 		o.documents.GetHash().GetDec() +
 		o.modifiedAt.GetHash().GetDec() +
 		o.status.GetHash().GetDec()
@@ -154,7 +154,7 @@ func (o Obit) GetRootHash() (hash.Hash, error) {
 			o.ownerDid.GetHash().GetDec(),
 			o.obdDid.GetHash().GetDec(),
 			o.metadata.GetHash().GetDec(),
-			o.structuredData.GetHash().GetDec(),
+			o.structureData.GetHash().GetDec(),
 			o.documents.GetHash().GetDec(),
 			o.modifiedAt.GetHash().GetDec(),
 			o.status.GetHash().GetDec(),
