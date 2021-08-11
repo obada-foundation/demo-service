@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	sdkgo "github.com/obada-foundation/sdkgo"
+	"github.com/obada-foundation/sdkgo/properties"
 	app "github.com/obada-protocol/demo-service/http"
 	"log"
 	"net/http"
 	"strings"
 )
 
-type rootHashGroup struct{}
+type checksumGroup struct{}
 
 type ObitRequest struct {
 	sdkgo.ObitDto
@@ -20,7 +21,7 @@ type ObitRequest struct {
 	ModifiedOn     int64
 }
 
-func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+func (ch checksumGroup) calculateChecksum(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var captureSdkLogs bytes.Buffer
 	var requestData ObitRequest
 	var dto sdkgo.ObitDto
@@ -34,13 +35,17 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 
 	app.Decode(r, &requestData)
 
-	toKV := func(dynamicKV interface{}) map[string]string {
-		kv := make(map[string]string)
+	toKV := func(dynamicKV interface{}) []properties.KV {
+		var kv []properties.KV
 
 		dynamicKVMap := dynamicKV.(map[string]interface{})
 
 		for key := range dynamicKVMap {
-			kv[key] = dynamicKVMap[key].(string)
+
+			kv = append(kv, properties.KV{
+				Key: key,
+				Value: dynamicKVMap[key].(string),
+			})
 		}
 
 		return kv
@@ -54,7 +59,6 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 	dto.Status = requestData.Status
 	dto.Matadata = toKV(requestData.Metadata)
 	dto.StructuredData = toKV(requestData.StructuredData)
-	dto.Documents = toKV(requestData.Documents)
 
 	if err != nil {
 		return err
@@ -68,7 +72,7 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 		return err
 	}
 
-	rootHash, err := obit.GetRootHash()
+	rootHash, err := obit.GetChecksum(nil)
 
 	if err != nil {
 		return err
@@ -88,10 +92,10 @@ func (rh rootHashGroup) calculateRootHash(ctx context.Context, w http.ResponseWr
 	return app.RespondJson(ctx, w, resp, http.StatusOK)
 }
 
-func (rh rootHashGroup) rootHash(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+func (ch checksumGroup) checksum(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var html bytes.Buffer
 
-	tpl, err := app.NewTpl().ParseFS(templateFs, "templates/roothash.html", "templates/base.html")
+	tpl, err := app.NewTpl().ParseFS(templateFs, "templates/checksum.html", "templates/base.html")
 
 	if err != nil {
 		return err

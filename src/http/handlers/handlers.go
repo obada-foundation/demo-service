@@ -34,11 +34,11 @@ func Server(build string, shutdown chan os.Signal, log *log.Logger, options ...f
 
 	app.Handle(http.MethodGet, "/", home)
 
-	rhg := rootHashGroup{}
+	ch := checksumGroup{}
 
-	app.Handle(http.MethodGet, "/root-hash", rhg.rootHash)
-	app.Handle(http.MethodGet, "/root-hash/:obitId", rhg.rootHash)
-	app.Handle(http.MethodPost, "/root-hash", rhg.calculateRootHash)
+	app.Handle(http.MethodGet, "/root-hash", ch.checksum)
+	app.Handle(http.MethodGet, "/root-hash/:obitId", ch.checksum)
+	app.Handle(http.MethodPost, "/root-hash", ch.calculateChecksum)
 
 	eg := explorerGroup{}
 

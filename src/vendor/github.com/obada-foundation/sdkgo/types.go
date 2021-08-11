@@ -35,9 +35,9 @@ type ObitDto struct {
 	ObitIDDto
 	OwnerDid       string `validate:"required"`
 	ObdDid         string
-	Matadata       map[string]string
-	StructuredData map[string]string
-	Documents      map[string]string
+	Matadata       []properties.KV
+	StructuredData []properties.KV
+	Documents      []properties.Doc
 	ModifiedOn     int64 `validate:"min-modified-on"`
 	AlternateIDS   []string
 	Status         string
@@ -51,9 +51,9 @@ type Obit struct {
 	partNumber       properties.StringProperty
 	ownerDid         properties.StringProperty
 	obdDid           properties.StringProperty
-	metadata         properties.KvProperty
-	structuredData   properties.KvProperty
-	documents        properties.KvProperty
+	metadata         properties.KvCollection
+	structuredData   properties.KvCollection
+	documents        properties.Documents
 	modifiedOn       properties.IntProperty
 	alternateIDS     properties.SliceStrProperty
 	status           properties.StatusProperty

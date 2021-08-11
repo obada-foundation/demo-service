@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	sdk_go "github.com/obada-foundation/sdk-go"
 	"testing"
+
+	"github.com/obada-foundation/sdkgo"
 )
 
 func TestDecodingJsonFromFrontendToDto(t *testing.T) {
@@ -18,7 +19,7 @@ func TestDecodingJsonFromFrontendToDto(t *testing.T) {
 	"Metadata":{"ss1":"ff"}
 }`)
 
-	var dto sdk_go.ObitDto
+	var dto sdkgo.ObitDto
 
 	if err := json.Unmarshal(data, &dto); err != nil {
 		t.Fatal(err)

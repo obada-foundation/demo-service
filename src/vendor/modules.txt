@@ -13,13 +13,7 @@ github.com/go-playground/universal-translator
 github.com/go-playground/validator/v10
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
-# github.com/obada-foundation/sdk-go v0.0.0-20210603074941-0130bf77e9d9
-## explicit
-github.com/obada-foundation/sdk-go
-github.com/obada-foundation/sdk-go/base58
-github.com/obada-foundation/sdk-go/hash
-github.com/obada-foundation/sdk-go/properties
-# github.com/obada-foundation/sdkgo v0.0.0-20210628222804-e7f462016d69
+# github.com/obada-foundation/sdkgo v0.0.0-20210806134350-52114fd65231
 ## explicit
 github.com/obada-foundation/sdkgo
 github.com/obada-foundation/sdkgo/base58

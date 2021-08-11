@@ -13,6 +13,7 @@ run:
 test:
 	cd ./src && go test ./...
 
+export GOPRIVATE=github.com/obada-foundation
 vendor:
 	cd ./src && go mod tidy && go mod vendor
 
