@@ -72,7 +72,7 @@ func (ch checksumGroup) calculateChecksum(ctx context.Context, w http.ResponseWr
 		return err
 	}
 
-	rootHash, err := obit.GetChecksum(nil)
+	checksum, err := obit.GetChecksum(nil)
 
 	if err != nil {
 		return err
@@ -82,10 +82,10 @@ func (ch checksumGroup) calculateChecksum(ctx context.Context, w http.ResponseWr
 	logOutput = strings.ReplaceAll(logOutput, "|>", "</p>")
 
 	resp := struct {
-		RootHash string
+		Checksum string
 		Log      string
 	}{
-		RootHash: rootHash.GetHash(),
+		Checksum: checksum.GetHash(),
 		Log:      logOutput,
 	}
 

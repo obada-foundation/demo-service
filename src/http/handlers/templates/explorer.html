@@ -70,11 +70,11 @@
                             <tr>
                                 <td>#</td>
                                 <td class="text-center">USN</td>
-                                <td class="text-center">Obit</td>
+                                <td class="text-center">Obit DID</td>
                                 <td class="text-center">Owner</td>
                                 <td class="text-center">Last Updated</td>
-                                <td>Root Hash</td>
-                                <td>QLDB Root Hash</td>
+                                <td>Checksum</td>
+                                <td>QLDB Checksum</td>
                                 <td>Blockchain Data Fields</td>
                             </tr>
                             </thead>
@@ -84,9 +84,9 @@
                                 <td><a :href="'/obit/' + obit.obit_did">{{ obit.usn.substr(0,4) }}-{{ obit.usn.substr(4,8) }}</a></td>
                                 <td><button class="btn btn-link" v-clipboard="obit.obit_did">(copy)</button> {{ obit.obit_did.substr(0, 4) }}...</td>
                                 <td>{{ obit.owner_did }}</td>
-                                <td>{{ obit.modified_at }}</td>
-                                <td>{{ obit.root_hash.substr(0, 12) }}</td>
-                                <td>{{ obit.root_hash.substr(0, 12) }}</td>
+                                <td>{{ obit.modified_on }}</td>
+                                <td>{{ obit.checksum.substr(0, 12) }}</td>
+                                <td>{{ obit.checksum.substr(0, 12) }}</td>
                                 <td class="text-center"><a :href="'/obit/' + obit.obit_did">view</a></td>
                             </tr>
                             </tbody>
@@ -117,11 +117,11 @@
                 vm.obits.splice(0, vm.obits.length)
 
                 if (this.searchTerm.length) {
-                    query = "?query=" + this.searchTerm
+                    query = "?q=" + this.searchTerm
                 }
 
                 this.http.get('obits' + query).then(function (response) {
-                    response.data.forEach(function (obit) {
+                    response.data.data.forEach(function (obit) {
                         vm.obits.push(obit)
                     })
                 })
@@ -130,7 +130,9 @@
         created() {
             let vm = this
             this.http.get('obits').then(function (response) {
-                response.data.forEach(function (obit) {
+                console.log(response)
+                console.log(response.data)
+                response.data.data.forEach(function (obit) {
                     vm.obits.push(obit)
                 })
             })
@@ -153,7 +155,7 @@
         },
         data() {
             return {
-                node: "https://dev.api.obada.io/",
+                node: "https://obs.node.obada.io/",
                 nodes: [],
                 settings: {
                   open: false
@@ -161,7 +163,7 @@
                 searchTerm: "",
                 obits: [],
                 http: axios.create({
-                    baseURL: "https://dev.api.obada.io/",
+                    baseURL: "https://obs.node.obada.io/",
                     timeout: 2000
                 })
             }

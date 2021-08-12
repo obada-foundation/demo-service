@@ -29,7 +29,7 @@ deploy:
 	docker run -t --rm \
 		-w /home/ansible/deployment \
 		-v $$(pwd)/deployment:/home/ansible/deployment \
-		-v $$(pwd)/hosts:/etc/ansible/hosts \
+		-v $$(pwd)/inventory:/etc/ansible/hosts \
 		-v $$(pwd)/id_rsa:/home/ansible/.ssh/id_rsa \
 		securityrobot/ansible-alpine:2.9.1 \
 		ansible-playbook playbook.yml --limit gateway.obada.io
